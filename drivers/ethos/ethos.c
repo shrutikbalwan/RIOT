@@ -175,10 +175,12 @@ static void ethos_isr(void *arg, uint8_t c)
                 case (ETHOS_ESC_CHAR ^ 0x20):
                     break;
                 case (ETHOS_FRAME_TYPE_TEXT ^ 0x20):
+                    if (dev->frametype == ETHOS_FRAME_TYPE_DATA) {
+                        /* Undo only the escape byte queued in IN_FRAME. Pending
+                         * DATA frames may still be consumed by the reader. */
+                        dev->inbuf.writes--;
+                    }
                     dev->frametype = ETHOS_FRAME_TYPE_TEXT;
-                    /* reset tsrb (used for networking) */
-                    dev->inbuf.reads = 0;
-                    dev->inbuf.writes = 0;
                     dev->state = IN_FRAME;
                     return;
                 case (ETHOS_FRAME_TYPE_HELLO ^ 0x20):

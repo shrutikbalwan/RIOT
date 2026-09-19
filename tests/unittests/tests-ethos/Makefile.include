@@ -1,0 +1,2 @@
+USEMODULE += ethos
+LINKFLAGS += -Wl,--wrap=uart_init -Wl,--wrap=uart_write
